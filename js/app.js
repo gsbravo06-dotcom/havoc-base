@@ -1,11 +1,19 @@
 /**
- * HAVOC BASE - APLICATIVO OPERACIONAL UNIFICADO
- * Fase 2: Tela 1 (Boas-vindas com Versículos & Wallpaper com suporte a upload do celular)
- * Fase 3: Tela 2 (Central de Aplicativos - Ícones Táticos 2 a 2 para Celular)
+ * HAVOC BASE - SISTEMA OPERACIONAL UNIFICADO
+ * Fase 2: Tela 1 (Boas-vindas com Versículo do Dia & Emblema Oficial)
+ * Fase 3: Tela 2 (Central de Aplicativos 100% Unificada em 1 só App)
+ * 
+ * Módulos Integrados:
+ * 1. Treino Operacional (TFM, Força, Circuito & Cronômetro)
+ * 2. Orthodoxus DO (Musculação, Fichas, Filtro por Músculo & GIFs Animados)
+ * 3. Financeiro (+Entrada, -Saída, Parcelas Inteligentes, Contas Pagas Riscadas)
+ * 4. Tarefas & Lembretes (Checklist Diário)
+ * 5. Recados & Mural de Anotações
+ * 6. Backup Permanente (Exportar / Importar JSON)
  */
 
 // ==========================================
-// RELÓGIO & DATA HUD INSTANTÂNEOS (AUTO-INICIALIZADOR IMEDIATO)
+// RELÓGIO & DATA HUD INSTANTÂNEOS
 // ==========================================
 (function() {
   function tickInstantHUD() {
@@ -23,32 +31,6 @@
   }
   tickInstantHUD();
   setInterval(tickInstantHUD, 1000);
-
-  function bindDirectNavigation() {
-    try {
-      const welcome = document.getElementById('screen-welcome');
-      const btnEnter = document.getElementById('btn-enter-dashboard');
-      const btnBack = document.getElementById('btn-back-welcome');
-      if (btnEnter && welcome) {
-        btnEnter.addEventListener('click', () => {
-          welcome.classList.add('slide-out');
-          if (window.app) window.app.currentScreen = 2;
-        });
-      }
-      if (btnBack && welcome) {
-        btnBack.addEventListener('click', () => {
-          welcome.classList.remove('slide-out');
-          if (window.app) window.app.currentScreen = 1;
-        });
-      }
-    } catch (e) {}
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindDirectNavigation);
-  } else {
-    bindDirectNavigation();
-  }
 })();
 
 const DEFAULT_WALLPAPER = 'https://i.pinimg.com/736x/12/f1/b0/12f1b04afce3d33e17e920d2bd195d13.jpg';
@@ -67,10 +49,6 @@ const BACKUP_QUOTES = [
 ];
 
 const INITIAL_DATA = {
-  plantao: [
-    { id: 1, title: "Plantão 24h - Base Bravo", status: "confirmado", date: "Escala Ordinária" },
-    { id: 2, title: "Extra / Diária de Operação", status: "pendente", date: "Aguardando confirmação" }
-  ],
   financeiro: [],
   tarefas: [
     { id: 1, title: "Inspecionar colete balístico e cautela", done: 1 },
@@ -87,11 +65,9 @@ class HavocBaseApp {
   constructor() {
     this.currentScreen = 1;
     this.wallpaperUrl = DEFAULT_WALLPAPER;
-    try { localStorage.setItem('havoc_wallpaper_url', DEFAULT_WALLPAPER); } catch (e) {}
     this.wallpaperDim = localStorage.getItem('havoc_wallpaper_dim') || '0.25';
     this.pendingWallpaperUrl = null;
     
-    // Estado Financeiro: Inicia automaticamente no mês atual
     try {
       this.currentFinMonth = this.getCurrentMonthKey();
     } catch (e) {
@@ -101,23 +77,16 @@ class HavocBaseApp {
     this.currentFinFilter = 'todos';
     this.isDraggingApp = false;
 
-    // Dados Locais Seguros com Fallback e Higienização de Nulos
-    try {
-      this.plantao = JSON.parse(localStorage.getItem('havoc_plantao')) || INITIAL_DATA.plantao;
-      if (!Array.isArray(this.plantao)) this.plantao = INITIAL_DATA.plantao;
-      this.plantao = this.plantao.filter(p => p && typeof p === 'object');
-    } catch (e) {
-      this.plantao = INITIAL_DATA.plantao;
-    }
+    // Estado dos Treinos
+    this.treinoOpTab = 'tfm';
+    this.orthoView = 'ficha';
+    this.orthoMuscle = 'Todos';
 
+    // Recupera dados salvos do usuário
     try {
       this.financeiro = JSON.parse(localStorage.getItem('havoc_financeiro')) || [];
       if (!Array.isArray(this.financeiro)) this.financeiro = [];
-      // Remove lançamentos demonstrativos para que a tela fique 100% limpa e com as entradas/saídas do usuário
-      const dummyDescs = [
-        'salário base', 'aluguel & condomínio', 'internet fibra', 'financiamento', 
-        'equipamento operacional', 'auxílio fardamento'
-      ];
+      const dummyDescs = ['salário base', 'aluguel & condomínio', 'internet fibra', 'financiamento', 'equipamento operacional', 'auxílio fardamento'];
       this.financeiro = this.financeiro.filter(f => f && typeof f === 'object' && !dummyDescs.includes(String(f.desc || '').toLowerCase().trim()));
     } catch (e) {
       this.financeiro = [];
@@ -139,27 +108,16 @@ class HavocBaseApp {
       this.recados = INITIAL_DATA.recados;
     }
 
-    // Garante estrutura atualizada com mês, status pago e auxílio fardamento
-    try {
-      this.ensureFinanceiroData();
-    } catch (e) {
-      console.warn('Aviso ao sincronizar dados financeiros:', e);
-    }
-
+    this.ensureFinanceiroData();
     this.init();
   }
 
   init() {
-    // 1. Relógio e Navegação Primários (Hora, data e entrada na base SEMPRE prioritários)
-    try { this.setupClock(); } catch (e) { console.error('Clock error:', e); }
-    try { this.setupNavigation(); } catch (e) { console.error('Navigation error:', e); }
-
-    // 2. Recursos Visuais e Frase do Dia
+    try { this.setupClock(); } catch (e) {}
+    try { this.setupNavigation(); } catch (e) {}
     try { this.applyWallpaper(this.wallpaperUrl); } catch (e) {}
     try { this.applyWallpaperDim(this.wallpaperDim); } catch (e) {}
     try { this.loadQuoteOnStart(); } catch (e) {}
-
-    // 3. Modais e Aplicativos Integrados
     try { this.restoreAppsOrder(); } catch (e) {}
     try { this.setupDragAndDrop(); } catch (e) {}
     try { this.setupAppLauncher(); } catch (e) {}
@@ -170,9 +128,6 @@ class HavocBaseApp {
     try { this.updateBadges(); } catch (e) {}
   }
 
-  // ==========================================
-  // HELPERS DE GESTÃO DE MESES
-  // ==========================================
   getCurrentMonthKey(date = new Date()) {
     const y = date.getFullYear();
     const m = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -201,12 +156,9 @@ class HavocBaseApp {
     return `${y}-${m}`;
   }
 
-  // Garante a integridade dos dados e o pré-cadastro do Auxílio Fardamento Trimestral
   ensureFinanceiroData() {
     const currentKey = this.getCurrentMonthKey();
     let modified = false;
-
-    // Garante que cada lançamento possua mês e status pago consistente
     this.financeiro.forEach(item => {
       if (!item || typeof item !== 'object') return;
       if (!item.month) {
@@ -218,21 +170,14 @@ class HavocBaseApp {
         modified = true;
       }
     });
-
-    if (modified) {
-      this.saveFinanceiro();
-    }
+    if (modified) this.saveFinanceiro();
   }
 
-  // ==========================================
-  // TELA 1: VERSÍCULO DETERMINÍSTICO DO DIA (1 POR DIA, NÃO MUDA AO REABRIR)
-  // ==========================================
   async loadQuoteOnStart() {
-    const todayKey = new Date().toISOString().slice(0, 10); // Ex: "2026-10-23"
+    const todayKey = new Date().toISOString().slice(0, 10);
     const savedDate = localStorage.getItem('havoc_daily_quote_date');
     const savedQuote = localStorage.getItem('havoc_daily_quote_data');
 
-    // Se já foi carregado hoje, mantém exatamente a mesma frase/versículo do dia
     if (savedDate === todayKey && savedQuote) {
       try {
         const parsed = JSON.parse(savedQuote);
@@ -243,7 +188,6 @@ class HavocBaseApp {
       } catch (e) {}
     }
 
-    // Se é um novo dia, seleciona deterministicamente pelo dia do ano
     const now = new Date();
     const startOfYear = new Date(now.getFullYear(), 0, 0);
     const diff = now - startOfYear;
@@ -281,9 +225,6 @@ class HavocBaseApp {
     }
   }
 
-  // ==========================================
-  // TRANSIÇÃO DE TELAS
-  // ==========================================
   setupNavigation() {
     const welcomeScreen = document.getElementById('screen-welcome');
     const btnEnter = document.getElementById('btn-enter-dashboard');
@@ -328,49 +269,7 @@ class HavocBaseApp {
     }, { passive: true });
   }
 
-  // ==========================================
-  // LAUNCHER DOS APPS (PROTEÇÃO ANTI-REDIRECT LOVABLE)
-  // ==========================================
   setupAppLauncher() {
-    const viewer = document.getElementById('app-viewer-container');
-    const viewerIframe = document.getElementById('viewer-iframe');
-    const viewerTitle = document.getElementById('viewer-title');
-    const viewerExternal = document.getElementById('btn-viewer-external');
-    const btnCloseViewer = document.getElementById('btn-close-viewer');
-    const viewerNotice = document.getElementById('viewer-notice');
-    const btnNoticeOpen = document.getElementById('btn-notice-open');
-
-    const openInViewer = (url, title) => {
-      if (viewerTitle) viewerTitle.textContent = title;
-      if (viewerExternal) viewerExternal.href = url;
-      if (btnNoticeOpen) btnNoticeOpen.href = url;
-
-      // Exibe o visualizador em tela cheia com botão de retorno
-      if (viewer) viewer.classList.add('active');
-
-      if (viewerIframe) {
-        viewerIframe.src = url;
-      }
-
-      // Mostra aviso de contingência após 3 segundos caso o app Lovable tenha cabeçalho restrito
-      if (viewerNotice) {
-        viewerNotice.style.display = 'none';
-        setTimeout(() => {
-          if (viewer && viewer.classList.contains('active')) {
-            viewerNotice.style.display = 'flex';
-          }
-        }, 2500);
-      }
-    };
-
-    if (btnCloseViewer) {
-      btnCloseViewer.addEventListener('click', () => {
-        if (viewer) viewer.classList.remove('active');
-        if (viewerIframe) viewerIframe.src = '';
-        if (viewerNotice) viewerNotice.style.display = 'none';
-      });
-    }
-
     // App 3: Financeiro
     document.getElementById('btn-open-financeiro')?.addEventListener('click', () => {
       this.renderFinanceiro();
@@ -390,11 +289,7 @@ class HavocBaseApp {
     });
   }
 
-  // ==========================================
-  // GESTÃO DOS MÓDULOS INTERNOS & BACKUP
-  // ==========================================
   setupToolModals() {
-    // Persistência de Armazenamento Automática
     if (navigator.storage && navigator.storage.persist) {
       navigator.storage.persist().then(granted => {
         const statusEl = document.getElementById('storage-status-text');
@@ -412,7 +307,7 @@ class HavocBaseApp {
       });
     });
 
-    // Modal de Backup: Exportar e Restaurar
+    // Modal Backup
     document.getElementById('btn-open-backup-modal')?.addEventListener('click', () => {
       document.getElementById('modal-backup')?.classList.add('active');
     });
@@ -460,12 +355,12 @@ class HavocBaseApp {
   }
 
   // ==========================================
-  // BACKUP & RESTAURAÇÃO DE DADOS (100% SEGURO)
+  // BACKUP E SINCRONIZAÇÃO TOTAL
   // ==========================================
   exportBackup() {
     try {
       const backupData = {
-        version: "havoc_v6",
+        version: "havoc_v7",
         timestamp: new Date().toISOString(),
         financeiro: this.financeiro,
         tarefas: this.tarefas,
@@ -552,11 +447,6 @@ class HavocBaseApp {
       }
     } else if (s.includes(',')) {
       s = s.replace(',', '.');
-    } else if (s.includes('.')) {
-      const parts = s.split('.');
-      if (parts.length === 2 && parts[1].length === 3 && parts[1] === '000') {
-        s = parts[0] + parts[1];
-      }
     }
     const n = parseFloat(s);
     return isNaN(n) ? 0 : n;
@@ -578,13 +468,10 @@ class HavocBaseApp {
     try {
       localStorage.setItem('havoc_financeiro', JSON.stringify(this.financeiro));
     } catch (e) {
-      console.warn('Erro ao persistir financeiro no localStorage:', e);
+      console.warn('Erro ao persistir financeiro:', e);
     }
   }
 
-  // ==========================================
-  // NAVEGADOR DE MESES DO FINANCEIRO
-  // ==========================================
   setupMonthNavigator() {
     const btnPrev = document.getElementById('btn-fin-prev-month');
     const btnNext = document.getElementById('btn-fin-next-month');
@@ -602,7 +489,6 @@ class HavocBaseApp {
       if (!selectTarget) return;
       selectTarget.innerHTML = '';
       const currentKey = this.getCurrentMonthKey();
-      // Permite lançamentos desde 2 meses atrás até 18 meses no futuro
       for (let i = -2; i <= 18; i++) {
         const mKey = this.addMonthsToKey(currentKey, i);
         const opt = document.createElement('option');
@@ -654,9 +540,6 @@ class HavocBaseApp {
     populateTargetMonthSelect();
   }
 
-  // ==========================================
-  // MARCAR CONTA COMO PAGA COM RISCADO
-  // ==========================================
   togglePagoFinanceiro(id) {
     const item = this.financeiro.find(f => f.id === id);
     if (!item) return;
@@ -671,10 +554,8 @@ class HavocBaseApp {
   }
 
   setupFinanceiroForm() {
-    // 1. Toggles de Tipo (Entrada, Fixa, Parcelada)
     const typeButtons = document.querySelectorAll('.btn-fin-type');
     const parcelasBox = document.getElementById('finance-parcelas-row');
-    const standardInputs = document.getElementById('finance-standard-inputs');
     const fixaRepeatRow = document.getElementById('fin-fixa-repeat-row');
 
     const selectType = (type) => {
@@ -705,7 +586,7 @@ class HavocBaseApp {
       });
     });
 
-    // Sincronização Inteligente do Parcelamento (Dívida Total, Qtd Parcelas, Valor Parcela, Pagas)
+    // Parcelas Inteligentes
     const inputTotalDebt = document.getElementById('input-fin-total-debt');
     const inputTotalParc = document.getElementById('input-fin-total-parc');
     const inputParcAmount = document.getElementById('input-fin-parc-amount');
@@ -741,7 +622,7 @@ class HavocBaseApp {
 
       summaryHint.innerHTML = `
         💡 <strong>${remainingP} parcelas de R$ ${formattedParcVal}</strong> (Total: R$ ${formattedTotalDebt}).<br>
-        Distribuídas mês a mês da <strong>parcela ${firstParcNum}/${totalP} (${firstMonthTitle})</strong> até a <strong>parcela ${totalP}/${totalP} (${lastMonthTitle})</strong>.<br>
+        Distribuídas da <strong>parcela ${firstParcNum}/${totalP} (${firstMonthTitle})</strong> até a <strong>parcela ${totalP}/${totalP} (${lastMonthTitle})</strong>.<br>
         <span style="color:var(--green-ops); font-weight:700;">✓ Debitará apenas R$ ${formattedParcVal} em cada mês!</span>
       `;
     };
@@ -750,8 +631,7 @@ class HavocBaseApp {
       const debt = this.parseMoney(inputTotalDebt.value);
       const totalP = parseInt(inputTotalParc?.value) || 0;
       if (debt > 0 && totalP > 0 && inputParcAmount) {
-        const calculated = debt / totalP;
-        inputParcAmount.value = calculated.toFixed(2).replace('.', ',');
+        inputParcAmount.value = (debt / totalP).toFixed(2).replace('.', ',');
       }
       updateSmartInstallmentSummary();
     });
@@ -760,8 +640,7 @@ class HavocBaseApp {
       const totalP = parseInt(inputTotalParc.value) || 0;
       const debt = this.parseMoney(inputTotalDebt?.value);
       if (debt > 0 && totalP > 0 && inputParcAmount) {
-        const calculated = debt / totalP;
-        inputParcAmount.value = calculated.toFixed(2).replace('.', ',');
+        inputParcAmount.value = (debt / totalP).toFixed(2).replace('.', ',');
       }
       updateSmartInstallmentSummary();
     });
@@ -770,8 +649,7 @@ class HavocBaseApp {
       const parcVal = this.parseMoney(inputParcAmount.value);
       const totalP = parseInt(inputTotalParc?.value) || 0;
       if (parcVal > 0 && totalP > 0 && inputTotalDebt) {
-        const calculatedDebt = parcVal * totalP;
-        inputTotalDebt.value = calculatedDebt.toFixed(2).replace('.', ',');
+        inputTotalDebt.value = (parcVal * totalP).toFixed(2).replace('.', ',');
       }
       updateSmartInstallmentSummary();
     });
@@ -779,22 +657,18 @@ class HavocBaseApp {
     inputPaidParc?.addEventListener('input', updateSmartInstallmentSummary);
     selectTarget?.addEventListener('change', updateSmartInstallmentSummary);
 
-    // Botão Zerar Lançamentos (Mantém o calendário do Auxílio Fardamento)
-    const btnResetFin = document.getElementById('btn-reset-financeiro');
-    if (btnResetFin) {
-      btnResetFin.addEventListener('click', () => {
-        if (confirm('Deseja zerar os lançamentos manuais para começar do zero? O calendário do Auxílio Fardamento trimestral será mantido.')) {
-          this.financeiro = [];
-          this.ensureFinanceiroData();
-          this.saveFinanceiro();
-          this.renderFinanceiro();
-          this.updateBadges();
-          this.showFinFeedback('✓ Lançamentos zerados! Calendário do Auxílio Fardamento mantido.');
-        }
-      });
-    }
+    // Botão Zerar Lançamentos
+    document.getElementById('btn-reset-financeiro')?.addEventListener('click', () => {
+      if (confirm('Deseja zerar os lançamentos financeiros para começar limpo?')) {
+        this.financeiro = [];
+        this.saveFinanceiro();
+        this.renderFinanceiro();
+        this.updateBadges();
+        this.showFinFeedback('✓ Lançamentos zerados!');
+      }
+    });
 
-    // 2. Abas de Filtro (Todos, A Pagar, Pagas, Entradas, Fixas, Parceladas)
+    // Abas de Filtro
     const filterButtons = document.querySelectorAll('.fin-filter-btn');
     filterButtons.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -805,7 +679,7 @@ class HavocBaseApp {
       });
     });
 
-    // 3. Salvar Lançamento com Distribuição Inteligente nos Próximos Meses
+    // Salvar Lançamento
     const btnSave = document.getElementById('btn-save-financeiro');
     const inputDesc = document.getElementById('input-fin-desc');
     const inputAmount = document.getElementById('input-fin-amount');
@@ -821,13 +695,9 @@ class HavocBaseApp {
         let parcVal = this.parseMoney(inputParcAmount?.value);
         const paidP = parseInt(inputPaidParc?.value) || 0;
 
-        if (parcVal <= 0 && debt > 0) {
-          parcVal = debt / totalP;
-        }
-
+        if (parcVal <= 0 && debt > 0) parcVal = debt / totalP;
         if (parcVal <= 0) {
           this.showFinFeedback('⚠️ Digite o valor da parcela ou o total da dívida.', true);
-          if (inputParcAmount) inputParcAmount.focus();
           return;
         }
 
@@ -837,11 +707,9 @@ class HavocBaseApp {
         }
 
         if (!desc) desc = 'Dívida Parcelada';
-
         const remainingCount = totalP - paidP;
         const baseId = Date.now();
 
-        // Distribui exatamente 1 parcela por mês nos meses seguintes
         for (let i = 0; i < remainingCount; i++) {
           const parcNum = paidP + 1 + i;
           const monthKey = this.addMonthsToKey(targetMonth, i);
@@ -860,8 +728,6 @@ class HavocBaseApp {
         }
 
         this.saveFinanceiro();
-
-        // Limpa campos
         if (inputDesc) inputDesc.value = '';
         if (inputTotalDebt) inputTotalDebt.value = '';
         if (inputParcAmount) inputParcAmount.value = '';
@@ -876,13 +742,12 @@ class HavocBaseApp {
         return;
       }
 
-      // Caso Entrada ou Conta Fixa
+      // Caso Entrada ou Saída Normal
       const rawVal = inputAmount ? inputAmount.value : '';
       const amount = this.parseMoney(rawVal);
 
       if (amount <= 0) {
-        this.showFinFeedback('⚠️ Digite um valor válido maior que zero (ex: 2000 ou 2000,00).', true);
-        if (inputAmount) inputAmount.focus();
+        this.showFinFeedback('⚠️ Digite um valor válido maior que zero.', true);
         return;
       }
 
@@ -894,7 +759,6 @@ class HavocBaseApp {
       const baseId = Date.now();
 
       if (repeatFixa) {
-        // Cria para os próximos 12 meses consecutivos
         for (let i = 0; i < 12; i++) {
           const monthKey = this.addMonthsToKey(targetMonth, i);
           this.financeiro.push({
@@ -920,8 +784,6 @@ class HavocBaseApp {
       }
 
       this.saveFinanceiro();
-
-      // Limpa campos
       if (inputDesc) inputDesc.value = '';
       if (inputAmount) inputAmount.value = '';
 
@@ -931,23 +793,9 @@ class HavocBaseApp {
 
       const formatted = amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       this.showFinFeedback(`✓ "${desc}" de R$ ${formatted} lançado em ${this.formatMonthTitle(targetMonth)}!`);
-
-      if (btnSave) {
-        const oldText = btnSave.textContent;
-        btnSave.textContent = '✓ Registrado com Sucesso!';
-        btnSave.style.background = 'var(--green-ops)';
-        btnSave.style.color = '#070a12';
-        setTimeout(() => {
-          btnSave.textContent = oldText;
-          btnSave.style.background = '';
-          btnSave.style.color = '';
-        }, 1500);
-      }
     };
 
-    if (btnSave) {
-      btnSave.addEventListener('click', saveEntry);
-    }
+    if (btnSave) btnSave.addEventListener('click', saveEntry);
 
     const handleEnter = (e) => {
       if (e.key === 'Enter') {
@@ -959,49 +807,22 @@ class HavocBaseApp {
     inputAmount?.addEventListener('keydown', handleEnter);
   }
 
-  payParcela(id) {
-    const item = this.financeiro.find(f => f.id === id);
-    if (!item || item.type !== 'parcelada') return;
-
-    if (item.currentParc < item.totalParc) {
-      item.currentParc += 1;
-      this.saveFinanceiro();
-      this.renderFinanceiro();
-      this.updateBadges();
-    }
-  }
-
-  // ==========================================
-  // RENDERIZAÇÃO INTELIGENTE DO MÊS SELECIONADO
-  // ==========================================
   renderFinanceiro() {
     const c = document.getElementById('financeiro-items-container');
     const balanceEl = document.getElementById('modal-fin-balance');
     const incEl = document.getElementById('modal-fin-income');
     const expEl = document.getElementById('modal-fin-expense');
-    const sobraBanner = document.getElementById('fin-sobra-banner');
-    const sobraBadge = document.getElementById('fin-sobra-badge');
-    const sobraDesc = document.getElementById('fin-sobra-desc');
-    const progressBar = document.getElementById('fin-progress-bar');
     const monthDisplay = document.getElementById('fin-month-display');
-    const statPagoLbl = document.getElementById('fin-stat-pago-lbl');
-    const statPendenteLbl = document.getElementById('fin-stat-pendente-lbl');
 
     if (monthDisplay) {
       monthDisplay.textContent = this.formatMonthTitle(this.currentFinMonth);
     }
 
     const activeMonthKey = this.currentFinMonth || this.getCurrentMonthKey();
-
-    // Filtra exclusivamente os lançamentos pertencentes ao mês ativo
     const monthItems = this.financeiro.filter(f => (f.month || this.getCurrentMonthKey()) === activeMonthKey);
 
     let totalEntradas = 0;
     let totalContas = 0;
-    let totalPagas = 0;
-    let countPagas = 0;
-    let totalPendentes = 0;
-    let countPendentes = 0;
 
     monthItems.forEach(f => {
       const val = Math.abs(this.parseMoney(f.amount));
@@ -1009,20 +830,11 @@ class HavocBaseApp {
         totalEntradas += val;
       } else {
         totalContas += val;
-        if (f.pago) {
-          totalPagas += val;
-          countPagas++;
-        } else {
-          totalPendentes += val;
-          countPendentes++;
-        }
       }
     });
 
     const sobra = totalEntradas - totalContas;
-    const comprometimento = totalEntradas > 0 ? (totalContas / totalEntradas) * 100 : (totalContas > 0 ? 100 : 0);
 
-    // Atualização dos Cards de Resumo
     if (incEl) incEl.textContent = `+R$ ${totalEntradas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     if (expEl) expEl.textContent = `-R$ ${totalContas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     if (balanceEl) {
@@ -1030,37 +842,8 @@ class HavocBaseApp {
       balanceEl.className = `stat-val ${sobra >= 0 ? 'val-green' : 'val-red'}`;
     }
 
-    // Mini Indicadores de Pagas vs Pendentes
-    if (statPagoLbl) {
-      statPagoLbl.textContent = `Pagas: R$ ${totalPagas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (${countPagas})`;
-    }
-    if (statPendenteLbl) {
-      statPendenteLbl.textContent = `Pendentes: R$ ${totalPendentes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (${countPendentes})`;
-    }
-
-    // Banner de Dedução e Sobra Líquida do Mês
-    if (sobraBanner && sobraBadge && sobraDesc && progressBar) {
-      const pctDisplay = Math.min(100, Math.round(comprometimento));
-      progressBar.style.width = `${pctDisplay}%`;
-
-      const mTitle = this.formatMonthTitle(activeMonthKey);
-      if (sobra >= 0) {
-        sobraBadge.textContent = `★ SOBRA: R$ ${sobra.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-        sobraBadge.className = 'fin-sobra-badge sobra-positiva';
-        progressBar.classList.remove('alerta');
-        sobraDesc.textContent = `${pctDisplay}% da renda de ${mTitle} comprometida. Você terá R$ ${sobra.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} livres no mês.`;
-      } else {
-        const deficit = Math.abs(sobra);
-        sobraBadge.textContent = `⚠️ DÉFICIT: -R$ ${deficit.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-        sobraBadge.className = 'fin-sobra-badge sobra-negativa';
-        progressBar.classList.add('alerta');
-        sobraDesc.textContent = `Atenção em ${mTitle}: Suas contas ultrapassam as entradas em R$ ${deficit.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}!`;
-      }
-    }
-
     if (!c) return;
 
-    // Aplicação dos Filtros de Categoria e Status
     let list = monthItems;
     if (this.currentFinFilter === 'pendente') {
       list = monthItems.filter(f => !f.pago && f.type !== 'entrada');
@@ -1070,8 +853,6 @@ class HavocBaseApp {
       list = monthItems.filter(f => f.type !== 'entrada');
     } else if (this.currentFinFilter === 'entrada') {
       list = monthItems.filter(f => f.type === 'entrada');
-    } else if (this.currentFinFilter && this.currentFinFilter !== 'todos') {
-      list = monthItems.filter(f => f.type === this.currentFinFilter);
     }
 
     if (list.length === 0) {
@@ -1108,8 +889,7 @@ class HavocBaseApp {
       return `
         <div class="list-item ${isPago ? 'pago-item' : ''}">
           <div style="display:flex; align-items:center; gap:10px; flex:1;">
-            <!-- Caixa de Seleção de Conta Paga com Riscado -->
-            <div class="fin-item-checkbox ${isPago ? 'checked' : ''}" onclick="app.togglePagoFinanceiro(${f.id})" title="${isPago ? 'Desmarcar como pago' : 'Marcar conta como paga'}">
+            <div class="fin-item-checkbox ${isPago ? 'checked' : ''}" onclick="app.togglePagoFinanceiro(${f.id})" title="${isPago ? 'Desmarcar como pago' : 'Marcar como paga'}">
               ${isPago ? '✓' : ''}
             </div>
 
@@ -1213,9 +993,6 @@ class HavocBaseApp {
     }
   }
 
-  // ==========================================
-  // ARRASTAR E SOLTAR APPS (REORDENAÇÃO PERSONALIZADA)
-  // ==========================================
   restoreAppsOrder() {
     const savedOrder = JSON.parse(localStorage.getItem('havoc_apps_order'));
     if (!savedOrder || !Array.isArray(savedOrder)) return;
@@ -1247,7 +1024,6 @@ class HavocBaseApp {
     let draggedItem = null;
     let justDragged = false;
 
-    // --- DESKTOP DRAG & DROP ---
     const attachCardEvents = (card) => {
       card.addEventListener('dragstart', (e) => {
         draggedItem = card;
@@ -1265,9 +1041,7 @@ class HavocBaseApp {
 
       card.addEventListener('dragenter', (e) => {
         e.preventDefault();
-        if (card !== draggedItem) {
-          card.classList.add('drag-over');
-        }
+        if (card !== draggedItem) card.classList.add('drag-over');
       });
 
       card.addEventListener('dragleave', () => {
@@ -1295,12 +1069,9 @@ class HavocBaseApp {
         card.classList.remove('dragging');
         grid.querySelectorAll('.app-icon-card').forEach(c => c.classList.remove('drag-over'));
         draggedItem = null;
-        setTimeout(() => {
-          this.isDraggingApp = false;
-        }, 50);
+        setTimeout(() => { this.isDraggingApp = false; }, 50);
       });
 
-      // Evita navegação acidental APENAS se houve reordenação real
       card.addEventListener('click', (e) => {
         if (justDragged) {
           e.preventDefault();
@@ -1310,94 +1081,6 @@ class HavocBaseApp {
     };
 
     grid.querySelectorAll('.app-icon-card').forEach(attachCardEvents);
-
-    // --- MOBILE TOUCH DRAG & DROP ---
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let activeTouchCard = null;
-    let touchDragActive = false;
-    let currentHoverCard = null;
-
-    grid.addEventListener('touchstart', (e) => {
-      const card = e.target.closest('.app-icon-card');
-      if (!card) return;
-
-      activeTouchCard = card;
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      touchDragActive = false;
-    }, { passive: true });
-
-    grid.addEventListener('touchmove', (e) => {
-      if (!activeTouchCard) return;
-
-      const touch = e.touches[0];
-      const deltaX = Math.abs(touch.clientX - touchStartX);
-      const deltaY = Math.abs(touch.clientY - touchStartY);
-
-      if (!touchDragActive && (deltaX > 15 || deltaY > 15)) {
-        touchDragActive = true;
-        this.isDraggingApp = true;
-        activeTouchCard.classList.add('dragging');
-      }
-
-      if (touchDragActive) {
-        const elemUnder = document.elementFromPoint(touch.clientX, touch.clientY);
-        const cardUnder = elemUnder?.closest('.app-icon-card');
-
-        grid.querySelectorAll('.app-icon-card').forEach(c => {
-          if (c !== cardUnder) c.classList.remove('drag-over');
-        });
-
-        if (cardUnder && cardUnder !== activeTouchCard) {
-          cardUnder.classList.add('drag-over');
-          currentHoverCard = cardUnder;
-        } else {
-          currentHoverCard = null;
-        }
-      }
-    }, { passive: false });
-
-    grid.addEventListener('touchend', (e) => {
-      if (activeTouchCard) {
-        if (touchDragActive && currentHoverCard && currentHoverCard !== activeTouchCard) {
-          const allCards = Array.from(grid.querySelectorAll('.app-icon-card'));
-          const draggedIdx = allCards.indexOf(activeTouchCard);
-          const targetIdx = allCards.indexOf(currentHoverCard);
-
-          if (draggedIdx < targetIdx) {
-            grid.insertBefore(activeTouchCard, currentHoverCard.nextSibling);
-          } else {
-            grid.insertBefore(activeTouchCard, currentHoverCard);
-          }
-          this.saveAppsOrder();
-        }
-
-        activeTouchCard.classList.remove('dragging');
-        grid.querySelectorAll('.app-icon-card').forEach(c => c.classList.remove('drag-over'));
-
-        if (touchDragActive) {
-          justDragged = true;
-          setTimeout(() => {
-            this.isDraggingApp = false;
-            justDragged = false;
-          }, 300);
-        }
-
-        activeTouchCard = null;
-        currentHoverCard = null;
-        touchDragActive = false;
-      }
-    });
-
-    grid.addEventListener('touchcancel', () => {
-      if (activeTouchCard) activeTouchCard.classList.remove('dragging');
-      grid.querySelectorAll('.app-icon-card').forEach(c => c.classList.remove('drag-over'));
-      activeTouchCard = null;
-      currentHoverCard = null;
-      touchDragActive = false;
-      this.isDraggingApp = false;
-    });
   }
 
   setupClock() {
@@ -1416,9 +1099,20 @@ class HavocBaseApp {
     setInterval(update, 1000);
   }
 
-  // ==========================================
-  // MODAL DE WALLPAPER (FOTO DO CELULAR & LINK)
-  // ==========================================
+  applyWallpaper(url) {
+    if (!url) return;
+    this.wallpaperUrl = url;
+    try { localStorage.setItem('havoc_wallpaper_url', url); } catch (e) {}
+    const el = document.getElementById('wallpaper-element');
+    if (el) el.style.backgroundImage = `url('${url}')`;
+  }
+
+  applyWallpaperDim(dim) {
+    this.wallpaperDim = dim;
+    try { localStorage.setItem('havoc_wallpaper_dim', dim); } catch (e) {}
+    document.documentElement.style.setProperty('--wallpaper-dim', dim);
+  }
+
   setupWallpaperModal() {
     const modal = document.getElementById('wallpaper-modal');
     const btnOpen = document.getElementById('btn-open-wallpaper-modal');
@@ -1452,12 +1146,10 @@ class HavocBaseApp {
       dimSlider.addEventListener('input', () => {
         const pct = dimSlider.value;
         dimValLabel.textContent = `${pct}%`;
-        const val = (pct / 100).toFixed(2);
-        this.applyWallpaperDim(val);
+        this.applyWallpaperDim((pct / 100).toFixed(2));
       });
     }
 
-    // Leitura da Foto do Celular / Galeria com FileReader
     if (inputFile) {
       inputFile.addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -1476,7 +1168,6 @@ class HavocBaseApp {
       });
     }
 
-    // Prévia ao digitar link
     if (inputUrl) {
       inputUrl.addEventListener('input', () => {
         const val = inputUrl.value.trim();
@@ -1492,7 +1183,6 @@ class HavocBaseApp {
 
     if (btnCancel) btnCancel.addEventListener('click', () => modal.classList.remove('active'));
 
-    // Restaurar Padrão
     if (btnReset) {
       btnReset.addEventListener('click', () => {
         this.applyWallpaper(DEFAULT_WALLPAPER);
@@ -1500,13 +1190,10 @@ class HavocBaseApp {
       });
     }
 
-    // Salvar Novo Wallpaper
     if (btnSave) {
       btnSave.addEventListener('click', () => {
         const chosen = this.pendingWallpaperUrl || inputUrl?.value.trim();
-        if (chosen) {
-          this.applyWallpaper(chosen);
-        }
+        if (chosen) this.applyWallpaper(chosen);
         modal.classList.remove('active');
       });
     }
@@ -1518,7 +1205,7 @@ function bootHavocApp() {
     try {
       window.app = new HavocBaseApp();
     } catch (err) {
-      console.error("Erro fatal ao iniciar HavocBaseApp:", err);
+      console.error("Erro ao iniciar HavocBaseApp:", err);
     }
   }
 }
