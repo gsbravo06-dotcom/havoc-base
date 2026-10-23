@@ -170,27 +170,27 @@
       <main class="launcher-scroll-area">
         <div class="apps-launcher-grid" id="apps-launcher-grid">
 
-          <!-- APP 1: TREINO OPERACIONAL (Neutro para todos os grupamentos táticos) -->
-          <a class="app-icon-card primary-app" id="btn-app-treino-op" data-app-id="treino-op" draggable="true" href="https://treino-operacional.lovable.app/app.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+          <!-- APP 1: TREINO OPERACIONAL (Módulo Integrado 100% Nativo) -->
+          <div class="app-icon-card primary-app" id="btn-open-treino-op" data-app-id="treino-op" draggable="true">
             <div class="app-card-badge status-green">ATIVO</div>
             <div class="app-icon-visual icon-treino-op">
               <img class="app-card-custom-icon" width="58" height="58" src="icons/treino-op.jpg" onerror="this.onerror=null; this.src='file:///C:/Users/gs_bravo06/.gemini/antigravity/brain/48f5c501-7530-45af-b83e-616a27565eab/.user_uploaded/media_1792769563443_7d5baee3.png';" alt="Treino Operacional">
             </div>
             <h3 class="app-card-title">Treino Operacional</h3>
             <p class="app-card-desc">Dê seu Máximo</p>
-            <div class="app-launch-tag">ABRIR APP ➔</div>
-          </a>
+            <div class="app-launch-tag">ABRIR TREINO ➔</div>
+          </div>
 
-          <!-- APP 2: ORTHODOXUS DO (Lovable - Abre direto com progresso salvo) -->
-          <a class="app-icon-card primary-app" id="btn-app-orthodoxus" data-app-id="orthodoxus" draggable="true" href="https://orthodoxusdo.lovable.app/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+          <!-- APP 2: ORTHODOXUS DO (Módulo Integrado 100% Nativo com GIFs) -->
+          <div class="app-icon-card primary-app" id="btn-open-orthodoxus" data-app-id="orthodoxus" draggable="true">
             <div class="app-card-badge status-green">ATIVO</div>
             <div class="app-icon-visual icon-orthodoxus">
               <img class="app-card-custom-icon" width="58" height="58" src="icons/orthodoxus.jpg" onerror="this.onerror=null; this.src='file:///C:/Users/gs_bravo06/.gemini/antigravity/brain/48f5c501-7530-45af-b83e-616a27565eab/.user_uploaded/media_1792761810023_1f34b60f.jpg';" alt="Orthodoxus DO">
             </div>
             <h3 class="app-card-title">Orthodoxus DO</h3>
-            <p class="app-card-desc">Treinos de musculação e físico</p>
-            <div class="app-launch-tag">ABRIR APP ➔</div>
-          </a>
+            <p class="app-card-desc">Musculação & Exercícios com GIFs</p>
+            <div class="app-launch-tag">ABRIR TREINO ➔</div>
+          </div>
 
           <!-- APP 3: FINANCEIRO -->
           <div class="app-icon-card" id="btn-open-financeiro" data-app-id="financeiro" draggable="true">
@@ -422,6 +422,97 @@
     </div>
   </div>
 
+  <!-- Modal 1: Treino Operacional (Integrado e Nativo) -->
+  <div id="modal-treino-op" class="tool-modal-overlay">
+    <div class="tool-modal-card tool-modal-large">
+      <div class="tool-modal-header">
+        <h3>🎯 Treino Operacional</h3>
+        <button class="btn-close-tool" data-close="modal-treino-op">✕</button>
+      </div>
+      
+      <!-- Banner com a foto oficial dos operadores olhando o mar -->
+      <div style="position:relative; width:100%; height:130px; border-radius:12px; overflow:hidden; margin-bottom:12px; border:1px solid rgba(255,255,255,0.1);">
+        <img src="icons/treino-op.jpg" onerror="this.onerror=null; this.src='file:///C:/Users/gs_bravo06/.gemini/antigravity/brain/48f5c501-7530-45af-b83e-616a27565eab/.user_uploaded/media_1792769621886_6e03c1fa.png';" style="width:100%; height:100%; object-fit:cover; display:block;" alt="Treino Operacional">
+        <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(11,15,25,0.95) 0%, rgba(0,0,0,0.3) 100%); display:flex; flex-direction:column; justify-content:flex-end; padding:12px;">
+          <span style="font-size:0.88rem; font-weight:900; color:#fff; letter-spacing:1px;">PREPARAÇÃO OPERACIONAL</span>
+          <span style="font-size:0.72rem; color:var(--gold); font-weight:700;">CONDICIONAMENTO TÁTICO & RESISTÊNCIA</span>
+        </div>
+      </div>
+
+      <!-- Cronômetro Tático -->
+      <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px 14px; margin-bottom:12px;">
+        <div>
+          <span style="display:block; font-size:0.68rem; color:var(--text-muted); text-transform:uppercase;">Cronômetro de Séries & Descanso</span>
+          <span id="tactical-timer-display" style="font-size:1.4rem; font-weight:900; font-family:monospace; color:#fff;">00:00</span>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button type="button" id="btn-timer-start-pause" class="btn-tool-action" style="padding:6px 14px; font-size:0.75rem;">Iniciar</button>
+          <button type="button" id="btn-timer-reset" class="btn-clear-fin" style="padding:6px 10px;">Zerar</button>
+        </div>
+      </div>
+
+      <!-- Abas das Rotinas Táticas -->
+      <div class="fin-filter-tabs" id="treino-op-tabs">
+        <button type="button" class="fin-filter-btn active" data-tab="tfm">🏃 TFM & Corrida</button>
+        <button type="button" class="fin-filter-btn" data-tab="forca">🛡️ Força Tática</button>
+        <button type="button" class="fin-filter-btn" data-tab="circuito">⚡ Circuito Operacional</button>
+      </div>
+
+      <!-- Lista de Exercícios Táticos da Rotina -->
+      <div class="tool-modal-body" id="treino-op-items-container" style="max-height:260px; overflow-y:auto;">
+        <!-- Inserido dinamicamente via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Orthodoxus DO (Musculação, Banco de GIFs & Guia) -->
+  <div id="modal-orthodoxus" class="tool-modal-overlay">
+    <div class="tool-modal-card tool-modal-large">
+      <div class="tool-modal-header">
+        <h3>🥋 Orthodoxus DO • Físico & Musculação</h3>
+        <button class="btn-close-tool" data-close="modal-orthodoxus">✕</button>
+      </div>
+
+      <!-- Abas de Navegação -->
+      <div class="fin-filter-tabs" id="ortho-main-tabs" style="margin-bottom:8px;">
+        <button type="button" class="fin-filter-btn active" data-view="ficha">📋 Treino Ativo</button>
+        <button type="button" class="fin-filter-btn" data-view="banco">🏋️ Exercícios & GIFs</button>
+        <button type="button" class="fin-filter-btn" data-view="guia">💡 Bi-Set vs Alternado</button>
+      </div>
+
+      <!-- Seletor Opcional de Músculo Escolhido -->
+      <div id="ortho-muscle-filter-row" style="margin-bottom:10px;">
+        <span style="display:block; font-size:0.68rem; color:var(--text-muted); font-weight:700; margin-bottom:4px; text-transform:uppercase;">
+          MÚSCULO ESCOLHIDO (Opcional):
+        </span>
+        <div class="ortho-muscle-filter-bar">
+          <button type="button" class="muscle-pill active" data-muscle="Todos">Todos</button>
+          <button type="button" class="muscle-pill" data-muscle="Peito">Peito</button>
+          <button type="button" class="muscle-pill" data-muscle="Bíceps">Bíceps</button>
+          <button type="button" class="muscle-pill" data-muscle="Tríceps">Tríceps</button>
+          <button type="button" class="muscle-pill" data-muscle="Costas">Costas</button>
+          <button type="button" class="muscle-pill" data-muscle="Ombros">Ombros</button>
+          <button type="button" class="muscle-pill" data-muscle="Pernas">Pernas</button>
+          <button type="button" class="muscle-pill" data-muscle="Abdômen">Abdômen</button>
+        </div>
+      </div>
+
+      <!-- Corpo Dinâmico: Ficha, Banco ou Guia -->
+      <div class="tool-modal-body" id="ortho-content-container" style="max-height:300px; overflow-y:auto;">
+        <!-- Injetado dinamicamente via JS com GIFs -->
+      </div>
+
+      <!-- Formulário de Adicionar Exercício -->
+      <div class="tool-modal-footer" id="ortho-footer-form" style="display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="input-new-ortho-name" class="tool-input-text" placeholder="Nome do exercício..." style="flex:2;">
+          <input type="text" id="input-new-ortho-series" class="tool-input-amount" placeholder="4x10-12" style="flex:1;">
+        </div>
+        <button type="button" id="btn-save-ortho-ex" class="btn-tool-action">Adicionar ao Treino</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal Tarefas -->
   <div id="modal-tarefas" class="tool-modal-overlay">
     <div class="tool-modal-card">
@@ -519,7 +610,31 @@
   <script>
     (function() {
       document.addEventListener('click', function(e) {
-        // 1. Financeiro
+        // 1. Treino Operacional
+        var treinoCard = e.target.closest('#btn-open-treino-op');
+        if (treinoCard) {
+          e.preventDefault();
+          if (window.app && typeof window.app.renderTreinoOp === 'function') {
+            window.app.renderTreinoOp();
+          }
+          var mTreino = document.getElementById('modal-treino-op');
+          if (mTreino) mTreino.classList.add('active');
+          return;
+        }
+
+        // 2. Orthodoxus DO
+        var orthoCard = e.target.closest('#btn-open-orthodoxus');
+        if (orthoCard) {
+          e.preventDefault();
+          if (window.app && typeof window.app.renderOrthodoxus === 'function') {
+            window.app.renderOrthodoxus();
+          }
+          var mOrtho = document.getElementById('modal-orthodoxus');
+          if (mOrtho) mOrtho.classList.add('active');
+          return;
+        }
+
+        // 3. Financeiro
         var finCard = e.target.closest('#btn-open-financeiro');
         if (finCard) {
           e.preventDefault();
