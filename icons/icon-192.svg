@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="192" height="192">
+  <defs>
+    <!-- Gradiente de fundo do patch de borracha tática -->
+    <radialGradient id="rubberBase192" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#464e58"/>
+      <stop offset="70%" stop-color="#2d333b"/>
+      <stop offset="95%" stop-color="#1c2127"/>
+      <stop offset="100%" stop-color="#0f1216"/>
+    </radialGradient>
+
+    <!-- Azul Tático 3D do Texto HAVOC BASE -->
+    <linearGradient id="tacticalBlue192" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="30%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+
+    <!-- Tom Oliva Tático do Urso -->
+    <linearGradient id="bearOlive192" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#657256"/>
+      <stop offset="50%" stop-color="#47533c"/>
+      <stop offset="100%" stop-color="#2b3323"/>
+    </linearGradient>
+
+    <!-- Faca / Aço Tático -->
+    <linearGradient id="bladeSteel192" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="50%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+
+    <filter id="emboss3D192" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Base Circular do Patch Tático -->
+  <circle cx="256" cy="256" r="250" fill="#0d1117"/>
+  <circle cx="256" cy="256" r="244" fill="#20262e" stroke="#161b22" stroke-width="4"/>
+  <circle cx="256" cy="256" r="236" fill="none" stroke="#333b47" stroke-width="3" stroke-dasharray="8 6"/>
+  <circle cx="256" cy="256" r="226" fill="url(#rubberBase192)" stroke="#1a2028" stroke-width="6"/>
+  <circle cx="256" cy="256" r="206" fill="none" stroke="#1a2028" stroke-width="8"/>
+  <circle cx="256" cy="256" r="204" fill="none" stroke="#4b5563" stroke-width="2"/>
+
+  <!-- Trilhos Laterais em Arco -->
+  <path d="M 100 210 A 175 175 0 0 0 100 370" fill="none" stroke="#3e4737" stroke-width="12" stroke-linecap="round"/>
+  <path d="M 412 210 A 175 175 0 0 1 412 370" fill="none" stroke="#3e4737" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- TEXTO EM ARCO: HAVOC (ESQUERDA) e BASE (DIREITA) -->
+  <path id="arcHavoc192" d="M 90 220 A 175 175 0 0 1 230 95" fill="none"/>
+  <path id="arcBase192" d="M 285 95 A 175 175 0 0 1 425 220" fill="none"/>
+
+  <text fill="url(#tacticalBlue192)" font-family="'Impact', 'Arial Black', sans-serif" font-size="44" font-weight="900" letter-spacing="4" filter="url(#emboss3D192)">
+    <textPath href="#arcHavoc192" startOffset="10%">HAVOC</textPath>
+  </text>
+  <text fill="url(#tacticalBlue192)" font-family="'Impact', 'Arial Black', sans-serif" font-size="44" font-weight="900" letter-spacing="4" filter="url(#emboss3D192)">
+    <textPath href="#arcBase192" startOffset="20%">BASE</textPath>
+  </text>
+
+  <!-- ADAGA DE COMBATE -->
+  <g id="combatDagger192">
+    <path d="M 238 42 L 274 42 A 8 8 0 0 1 282 50 L 282 66 L 230 66 L 230 50 A 8 8 0 0 1 238 42 Z" fill="#475569" stroke="#1e293b" stroke-width="3"/>
+    <rect x="236" y="66" width="40" height="110" rx="4" fill="#334155" stroke="#0f172a" stroke-width="3"/>
+    <line x1="236" y1="80" x2="276" y2="80" stroke="#1e293b" stroke-width="3"/>
+    <line x1="236" y1="95" x2="276" y2="95" stroke="#1e293b" stroke-width="3"/>
+    <line x1="236" y1="110" x2="276" y2="110" stroke="#1e293b" stroke-width="3"/>
+    <line x1="236" y1="125" x2="276" y2="125" stroke="#1e293b" stroke-width="3"/>
+    <line x1="236" y1="140" x2="276" y2="140" stroke="#1e293b" stroke-width="3"/>
+    <line x1="236" y1="155" x2="276" y2="155" stroke="#1e293b" stroke-width="3"/>
+    <line x1="236" y1="170" x2="276" y2="170" stroke="#1e293b" stroke-width="3"/>
+    <line x1="256" y1="66" x2="256" y2="176" stroke="#64748b" stroke-width="3"/>
+    <rect x="214" y="176" width="84" height="18" rx="6" fill="#64748b" stroke="#1e293b" stroke-width="3"/>
+    <polygon points="232,194 256,260 280,194" fill="url(#bladeSteel192)" stroke="#1e293b" stroke-width="2"/>
+    <line x1="256" y1="194" x2="256" y2="258" stroke="#cbd5e1" stroke-width="2"/>
+  </g>
+
+  <!-- CABEÇA DO URSO TÁTICO -->
+  <g id="tacticalBear192" filter="url(#emboss3D192)">
+    <path d="M 180 205 C 150 200 155 240 180 250 Z" fill="#394231" stroke="#1c2118" stroke-width="3"/>
+    <path d="M 174 212 C 160 210 162 232 176 238 Z" fill="#20261b"/>
+    <path d="M 332 205 C 362 200 357 240 332 250 Z" fill="#394231" stroke="#1c2118" stroke-width="3"/>
+    <path d="M 338 212 C 352 210 350 232 336 238 Z" fill="#20261b"/>
+
+    <path d="M 180 240 
+             L 150 270 L 175 285 
+             L 140 320 L 170 335 
+             L 150 375 L 195 365 
+             L 210 410 L 240 390 
+             L 256 415 
+             L 272 390 L 302 410 
+             L 317 365 L 362 375 
+             L 342 335 L 372 320 
+             L 337 285 L 362 270 
+             L 332 240 Z" 
+          fill="url(#bearOlive192)" stroke="#1c2217" stroke-width="4"/>
+
+    <path d="M 210 245 L 225 290 L 205 320 L 220 345" fill="none" stroke="#2b3323" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 302 245 L 287 290 L 307 320 L 292 345" fill="none" stroke="#2b3323" stroke-width="4" stroke-linecap="round"/>
+
+    <!-- Olhos Agressivos -->
+    <polygon points="196,285 224,288 216,298 198,292" fill="#0f172a" stroke="#1c2217" stroke-width="2"/>
+    <polygon points="202,287 218,290 214,295 204,292" fill="#e2e8f0"/>
+    <circle cx="210" cy="291" r="2.5" fill="#38bdf8"/>
+
+    <polygon points="316,285 288,288 296,298 314,292" fill="#0f172a" stroke="#1c2217" stroke-width="2"/>
+    <polygon points="310,287 294,290 298,295 308,292" fill="#e2e8f0"/>
+    <circle cx="302" cy="291" r="2.5" fill="#38bdf8"/>
+
+    <!-- Focinho Tático -->
+    <path d="M 226 300 Q 256 292 286 300 Q 296 345 282 370 Q 256 385 230 370 Q 216 345 226 300 Z" fill="#4b5563" stroke="#1e293b" stroke-width="4"/>
+    <ellipse cx="256" cy="328" rx="18" ry="12" fill="#111827"/>
+    <circle cx="249" cy="330" r="4.5" fill="#000000"/>
+    <circle cx="263" cy="330" r="4.5" fill="#000000"/>
+
+    <!-- Boca Rosnando com Presas -->
+    <path d="M 230 354 Q 256 362 282 354 Q 276 392 256 396 Q 236 392 230 354 Z" fill="#0b0f19" stroke="#1c2217" stroke-width="3"/>
+    <polygon points="234,354 242,354 238,374" fill="#f8fafc"/>
+    <polygon points="244,354 250,354 247,364" fill="#f8fafc"/>
+    <polygon points="252,354 258,354 255,364" fill="#f8fafc"/>
+    <polygon points="262,354 268,354 265,364" fill="#f8fafc"/>
+    <polygon points="270,354 278,354 274,374" fill="#f8fafc"/>
+    <polygon points="240,388 246,388 243,374" fill="#f8fafc"/>
+    <polygon points="266,388 272,388 269,374" fill="#f8fafc"/>
+  </g>
+
+  <!-- BANDEIRA DO BRASIL -->
+  <g id="brazilFlagBadge192" transform="translate(222, 420)" filter="url(#emboss3D192)">
+    <rect x="-2" y="-2" width="72" height="48" rx="5" fill="#1c2127" stroke="#000000" stroke-width="2"/>
+    <rect x="0" y="0" width="68" height="44" rx="4" fill="#009c3b"/>
+    <polygon points="34,4 64,22 34,40 4,22" fill="#ffdf00"/>
+    <circle cx="34" cy="22" r="10.5" fill="#002776"/>
+    <path d="M 24 23 Q 34 20 44 24" fill="none" stroke="#ffffff" stroke-width="2.2"/>
+  </g>
+</svg>

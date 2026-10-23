@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <title>HAVOC BASE</title>
+  
+  <!-- Preconexão de Alta Velocidade para os Apps Lovable -->
+  <link rel="preconnect" href="https://treino-operacional.lovable.app" crossorigin>
+  <link rel="dns-prefetch" href="https://treino-operacional.lovable.app">
+  <link rel="preconnect" href="https://orthodoxusdo.lovable.app" crossorigin>
+  <link rel="dns-prefetch" href="https://orthodoxusdo.lovable.app">
+  
+  <!-- Ícone do Aplicativo no Celular (PWA e Home Screen) -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#070a12">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HAVOC BASE">
+  <link rel="icon" type="image/jpeg" href="icons/logo.jpg">
+  <link rel="apple-touch-icon" href="icons/logo.jpg">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css?v=6.0">
+</head>
+<body>
+
+  <div class="viewport-container">
+    
+    <!-- ====================================================================
+         FASE 2: TELA 1 (BOAS-VINDAS HAVOC BASE - FORMATO EXATO)
+         ==================================================================== -->
+    <section id="screen-welcome" class="screen-section">
+      <!-- Wallpaper com nitidez máxima -->
+      <div class="wallpaper-bg" id="wallpaper-element"></div>
+      <div class="wallpaper-overlay"></div>
+
+      <!-- Barra Superior HUD -->
+      <header class="welcome-hud-bar">
+        <div class="hud-time-date-chip">
+          <span class="hud-pulse-dot"></span>
+          <span id="welcome-live-clock" class="hud-clock-tag">--:--:--</span>
+          <span id="welcome-live-date" class="hud-date-tag">--/--/----</span>
+        </div>
+
+        <div class="hud-right-controls">
+          <button id="btn-open-wallpaper-modal" class="btn-hud-gear" title="Personalizar Imagem de Fundo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Ativação Imediata do Relógio, Data e Entrada (Sem Dependência de Cache) -->
+      <script>
+        (function() {
+          function updateClockDirect() {
+            try {
+              var now = new Date();
+              var timeStr = now.toLocaleTimeString('pt-BR', { hour12: false });
+              var dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+              var c = document.getElementById('welcome-live-clock');
+              var d = document.getElementById('welcome-live-date');
+              var l = document.getElementById('live-clock');
+              if (c) c.textContent = timeStr;
+              if (d) d.textContent = dateStr;
+              if (l) l.textContent = timeStr;
+            } catch (e) {}
+          }
+          updateClockDirect();
+          setInterval(updateClockDirect, 1000);
+
+          document.addEventListener('click', function(e) {
+            var enterTarget = e.target.closest('#btn-enter-dashboard') || (e.target.id === 'btn-enter-dashboard' ? e.target : null);
+            var backTarget = e.target.closest('#btn-back-welcome') || (e.target.id === 'btn-back-welcome' ? e.target : null);
+            var welcome = document.getElementById('screen-welcome');
+
+            if (enterTarget && welcome) {
+              welcome.classList.add('slide-out');
+              if (window.app) window.app.currentScreen = 2;
+            }
+            if (backTarget && welcome) {
+              welcome.classList.remove('slide-out');
+              if (window.app) window.app.currentScreen = 1;
+            }
+          });
+        })();
+      </script>
+
+      <!-- Centro Hero: Emblema Oficial + HAVOC BASE (Sem texto de central de comando) -->
+      <div class="welcome-hero-section">
+        <!-- Emblema em destaque com anel tático rotativo -->
+        <div class="patch-emblem-wrapper">
+          <div class="patch-radar-ring"></div>
+          <img id="hero-logo-img" class="patch-emblem-image" src="icons/logo.jpg" onerror="this.onerror=null; this.src='file:///C:/Users/gs_bravo06/.gemini/antigravity/brain/48f5c501-7530-45af-b83e-616a27565eab/.user_uploaded/media_1792767694813_2ace51b7.jpg';" alt="Emblema Havoc Base">
+        </div>
+
+        <!-- Título HAVOC BASE Limpo e Imponente -->
+        <div class="brand-hero-block">
+          <h1 class="brand-hero-title">HAVOC <span class="accent-steel">BASE</span></h1>
+        </div>
+
+        <!-- Card de Frase / Doutrina do Dia -->
+        <div class="creed-card" id="quote-box">
+          <div class="creed-header">
+            <span class="creed-indicator"></span>
+            <span class="creed-category" id="quote-category">⚡ MENTALIDADE RESILIENTE</span>
+          </div>
+          <p class="creed-body" id="quote-text">
+            "Você não para quando está cansado. Você para quando termina."
+          </p>
+          <div class="creed-footer">
+            <span class="creed-author" id="quote-author">DAVID GOGGINS</span>
+            <span class="creed-mark">#DISCIPLINA</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra Inferior: Botão de Ação -->
+      <footer class="welcome-bottom-bar">
+        <button id="btn-enter-dashboard" class="btn-tactical-launch">
+          <span class="btn-text">ENTRAR NA BASE</span>
+          <span class="btn-arrow">➔</span>
+        </button>
+        <div class="shortcut-hint">
+          Pressione <kbd>Espaço</kbd> ou <kbd>Enter</kbd> • Arraste para cima 👆
+        </div>
+        <div class="welcome-credits">Created by Gonçalves06</div>
+      </footer>
+    </section>
+
+    <!-- ====================================================================
+         TELA 2: CENTRAL DE APLICATIVOS (ÍCONES LADO A LADO 2 A 2 NO CELULAR)
+         ==================================================================== -->
+    <section id="screen-dashboard" class="screen-section">
+      <!-- Header do Painel -->
+      <header class="dash-header">
+        <div class="dash-brand">
+          <button id="btn-back-welcome" class="btn-back-welcome" title="Voltar à tela inicial">
+            ← <span>Início</span>
+          </button>
+          <h1 class="dash-title">HAVOC <span>BASE</span></h1>
+        </div>
+
+        <div class="dash-actions">
+          <button id="btn-open-backup-modal" class="btn-icon-minimal" style="width:34px;height:34px;" title="Backup e Sincronização">
+            💾
+          </button>
+          <button id="btn-toggle-icon-edit" class="btn-icon-minimal" style="width:34px;height:34px;" title="Personalizar Ícones dos Apps">
+            🎨
+          </button>
+          <div id="live-clock" class="live-clock">--:--:--</div>
+          <button id="btn-install-pwa" class="btn-install-app">
+            📲 <span>Instalar</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Subtítulo -->
+      <div class="launcher-headline">
+        <p class="launcher-subtitle">APLICATIVOS E CONTROLES</p>
+      </div>
+
+      <!-- Grid de Ícones 2 a 2 para Celular -->
+      <main class="launcher-scroll-area">
+        <div class="apps-launcher-grid" id="apps-launcher-grid">
+
+          <!-- APP 1: TREINO OPERACIONAL (Neutro para todos os grupamentos táticos) -->
+          <a class="app-icon-card primary-app" id="btn-app-treino-op" data-app-id="treino-op" draggable="true" href="https://treino-operacional.lovable.app/app.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+            <div class="app-card-badge status-green">ATIVO</div>
+            <div class="app-icon-visual icon-treino-op">
+              <img class="app-card-custom-icon" width="58" height="58" src="icons/treino-op.jpg" onerror="this.onerror=null; this.src='file:///C:/Users/gs_bravo06/.gemini/antigravity/brain/48f5c501-7530-45af-b83e-616a27565eab/.user_uploaded/media_1792769563443_7d5baee3.png';" alt="Treino Operacional">
+            </div>
+            <h3 class="app-card-title">Treino Operacional</h3>
+            <p class="app-card-desc">Dê seu Máximo</p>
+            <div class="app-launch-tag">ABRIR APP ➔</div>
+          </a>
+
+          <!-- APP 2: ORTHODOXUS DO (Lovable - Abre direto com progresso salvo) -->
+          <a class="app-icon-card primary-app" id="btn-app-orthodoxus" data-app-id="orthodoxus" draggable="true" href="https://orthodoxusdo.lovable.app/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+            <div class="app-card-badge status-green">ATIVO</div>
+            <div class="app-icon-visual icon-orthodoxus">
+              <img class="app-card-custom-icon" width="58" height="58" src="icons/orthodoxus.jpg" onerror="this.onerror=null; this.src='file:///C:/Users/gs_bravo06/.gemini/antigravity/brain/48f5c501-7530-45af-b83e-616a27565eab/.user_uploaded/media_1792761810023_1f34b60f.jpg';" alt="Orthodoxus DO">
+            </div>
+            <h3 class="app-card-title">Orthodoxus DO</h3>
+            <p class="app-card-desc">Treinos de musculação e físico</p>
+            <div class="app-launch-tag">ABRIR APP ➔</div>
+          </a>
+
+          <!-- APP 3: FINANCEIRO -->
+          <div class="app-icon-card" id="btn-open-financeiro" data-app-id="financeiro" draggable="true">
+            <div class="app-card-badge" id="badge-financeiro">R$ 0,00</div>
+            <div class="app-icon-visual icon-financeiro">
+              <img class="app-card-custom-icon" width="58" height="58" src="icons/financeiro.jpg" onerror="this.onerror=null; this.src='file:///C:/Users/gs_bravo06/.gemini/antigravity/brain/48f5c501-7530-45af-b83e-616a27565eab/.user_uploaded/media_1792763052169_19241a30.jpg';" alt="Financeiro">
+            </div>
+            <h3 class="app-card-title">Financeiro</h3>
+            <p class="app-card-desc">Diárias de extras e despesas</p>
+          </div>
+
+          <!-- APP 5: TAREFAS & LEMBRETES -->
+          <div class="app-icon-card" id="btn-open-tarefas" data-app-id="tarefas" draggable="true">
+            <div class="app-card-badge" id="badge-tarefas">0 Ativas</div>
+            <div class="app-icon-visual icon-blue">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 11l3 3L22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+            </div>
+            <h3 class="app-card-title">Tarefas & Lembretes</h3>
+            <p class="app-card-desc">Checklist diário e alarmes</p>
+          </div>
+
+          <!-- APP 6: RECADOS & NOTAS -->
+          <div class="app-icon-card" id="btn-open-recados" data-app-id="recados" draggable="true">
+            <div class="app-card-badge">MURAL</div>
+            <div class="app-icon-visual icon-purple">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </div>
+            <h3 class="app-card-title">Recados & Notas</h3>
+            <p class="app-card-desc">Anotações rápidas</p>
+          </div>
+
+        </div>
+      </main>
+    </section>
+
+  </div>
+
+  <!-- ====================================================================
+       MODAIS DOS MÓDULOS INTERNOS
+       ==================================================================== -->
+
+  <!-- Modal Backup & Sincronização Permanente -->
+  <div id="modal-backup" class="tool-modal-overlay">
+    <div class="tool-modal-card">
+      <div class="tool-modal-header">
+        <h3>💾 Backup & Dados Permanentes</h3>
+        <button class="btn-close-tool" data-close="modal-backup">✕</button>
+      </div>
+      <div class="tool-modal-body" style="padding:16px;">
+        <div class="backup-status-pill">
+          <span class="hud-pulse-dot"></span>
+          <span id="storage-status-text">Persistência de Dados: ATIVA</span>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-secondary); margin:12px 0; line-height:1.4;">
+          Para garantir que seus lançamentos financeiros, contas, tarefas, recados e treinos <strong>fiquem 100% salvos mesmo após reinstalar o aplicativo ou trocar de celular</strong>:
+        </p>
+        
+        <div class="backup-action-card">
+          <div style="font-weight:700; color:#fff; font-size:0.88rem; margin-bottom:4px;">1. Salvar Backup no Celular</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Baixa um arquivo .json seguro com todos os seus dados.</div>
+          <button type="button" id="btn-export-backup" class="btn-tool-action" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span>⬇️</span> <strong>Exportar Arquivo de Backup</strong>
+          </button>
+        </div>
+
+        <div class="backup-action-card" style="margin-top:14px;">
+          <div style="font-weight:700; color:#fff; font-size:0.88rem; margin-bottom:4px;">2. Restaurar Backup Salvo</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Restaura instantaneamente todas as suas contas, fichas e anotações.</div>
+          <input type="file" id="input-restore-backup" accept=".json" style="display:none;">
+          <button type="button" id="btn-trigger-restore" class="btn-tool-action" style="background:#2563eb; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span>⬆️</span> <strong>Selecionar Arquivo e Restaurar</strong>
+          </button>
+          <div id="restore-feedback-msg" style="margin-top:8px; font-size:0.78rem; text-align:center; display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Financeiro Completo com Gestão Mensal, Contas Pagas e Parcelamento Inteligente -->
+  <div id="modal-financeiro" class="tool-modal-overlay">
+    <div class="tool-modal-card">
+      <div class="tool-modal-header">
+        <h3>💰 Gestão Financeira & Contas</h3>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn-clear-fin" id="btn-reset-financeiro" title="Zerar lançamentos manuais">Zerar</button>
+          <button class="btn-close-tool" data-close="modal-financeiro">✕</button>
+        </div>
+      </div>
+
+      <!-- Barra de Navegação Entre Meses (Abre no mês atual com navegação para futuros) -->
+      <div class="fin-month-bar">
+        <button type="button" class="btn-month-nav" id="btn-fin-prev-month" title="Mês Anterior">◀</button>
+        <div class="fin-month-info">
+          <span class="fin-month-title" id="fin-month-display">Outubro de 2026</span>
+          <button type="button" class="btn-month-today" id="btn-fin-today-month" title="Voltar ao mês atual">Hoje</button>
+        </div>
+        <button type="button" class="btn-month-nav" id="btn-fin-next-month" title="Próximo Mês">▶</button>
+      </div>
+
+      <!-- Resumo Tático do Mês Ativo: Entradas vs Contas e Sobra Líquida -->
+      <div class="finance-stats-grid">
+        <div class="stat-box">
+          <span class="stat-lbl">▲ Total Entradas</span>
+          <span class="stat-val val-green" id="modal-fin-income">+R$ 0,00</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-lbl">▼ Total Contas</span>
+          <span class="stat-val val-red" id="modal-fin-expense">-R$ 0,00</span>
+        </div>
+        <div class="stat-box stat-sobra-box">
+          <span class="stat-lbl">★ Sobra Líquida</span>
+          <span class="stat-val val-gold" id="modal-fin-balance">R$ 0,00</span>
+        </div>
+      </div>
+
+      <!-- Sinalização de Sobra e Comprometimento de Renda do Mês (Opcional/Limpo) -->
+      <div class="fin-sobra-banner" id="fin-sobra-banner" style="display:none;">
+        <div class="fin-sobra-header">
+          <span class="fin-sobra-title" id="fin-sobra-title">SITUAÇÃO DO MÊS</span>
+          <span class="fin-sobra-badge" id="fin-sobra-badge">CALCULANDO...</span>
+        </div>
+        <div class="fin-progress-track">
+          <div class="fin-progress-bar" id="fin-progress-bar" style="width: 0%;"></div>
+        </div>
+        <div class="fin-sobra-desc" id="fin-sobra-desc">Dedução automática de contas fixas e parceladas do mês</div>
+      </div>
+
+      <!-- Indicadores de Contas Pagas vs Pendentes no Mês -->
+      <div class="fin-month-substats" style="display:none;">
+        <div class="fin-substat-pill pill-pago" id="fin-pill-pago">
+          <span class="fin-pill-dot">✓</span>
+          <span id="fin-stat-pago-lbl">Pagas: R$ 0,00 (0)</span>
+        </div>
+        <div class="fin-substat-pill pill-pendente" id="fin-pill-pendente">
+          <span class="fin-pill-dot">⏳</span>
+          <span id="fin-stat-pendente-lbl">Pendentes: R$ 0,00 (0)</span>
+        </div>
+      </div>
+
+      <!-- Filtro de Categorias e Status (Visual Limpo e Direto) -->
+      <div class="fin-filter-tabs">
+        <button type="button" class="fin-filter-btn active" data-filter="todos">Todos</button>
+        <button type="button" class="fin-filter-btn" data-filter="pendente">A Pagar</button>
+        <button type="button" class="fin-filter-btn" data-filter="pago">Pagas</button>
+        <button type="button" class="fin-filter-btn" data-filter="entrada">+ Entradas</button>
+        <button type="button" class="fin-filter-btn" data-filter="saida">- Saídas</button>
+      </div>
+
+      <!-- Lista dos Lançamentos do Mês Selecionado (com Checkbox de Conta Paga) -->
+      <div class="tool-modal-body" id="financeiro-items-container"></div>
+
+      <!-- Formulário Direto e Profissional (Sem excesso de botões) -->
+      <div class="tool-modal-footer finance-footer-form">
+        <!-- Seletor Obrigatório: +ENTRADA / -SAÍDAS / PARCELAS -->
+        <div class="finance-type-selector">
+          <button type="button" class="btn-fin-type active" id="btn-type-entrada" data-type="entrada">
+            + ENTRADA
+          </button>
+          <button type="button" class="btn-fin-type" id="btn-type-saida" data-type="saida">
+            - SAÍDA
+          </button>
+          <button type="button" class="btn-fin-type" id="btn-type-parcelada" data-type="parcelada">
+            💳 PARCELAS
+          </button>
+        </div>
+
+        <!-- Seletor do Mês de Lançamento (Permite cadastrar para os meses seguintes) -->
+        <div class="fin-target-month-row">
+          <span class="fin-label-small">Mês de Lançamento:</span>
+          <select id="input-fin-target-month" class="tool-select-month">
+            <!-- Populado dinamicamente via JS -->
+          </select>
+        </div>
+
+        <!-- Nome da Conta e Valor -->
+        <div class="finance-inputs-row" id="finance-standard-inputs">
+          <input type="text" id="input-fin-desc" class="tool-input-text" placeholder="Descrição do lançamento..." autocomplete="off">
+          <input type="text" inputmode="decimal" id="input-fin-amount" class="tool-input-amount" placeholder="Valor (R$)" autocomplete="off">
+        </div>
+
+        <!-- Opção para Cadastrar para os Meses Seguintes (Apenas para Saídas) -->
+        <div id="fin-fixa-repeat-row" class="fin-checkbox-row" style="display: none;">
+          <label class="fin-checkbox-label">
+            <input type="checkbox" id="input-fin-repeat-fixa">
+            <span>Cadastrar esta conta também para os próximos meses</span>
+          </label>
+        </div>
+
+        <!-- Painel Inteligente de Parcelas (Total da dívida, parcelas e o que já pagou) -->
+        <div id="finance-parcelas-row" class="finance-parcelas-smart-box" style="display: none;">
+          <div class="parc-header-tag">DISTRIBUIÇÃO INTELIGENTE DE PARCELAS</div>
+          <div class="parc-grid-inputs">
+            <div class="parc-col">
+              <span class="parc-label">Valor Total da Dívida:</span>
+              <input type="text" inputmode="decimal" id="input-fin-total-debt" placeholder="Ex: 5000">
+            </div>
+            <div class="parc-col">
+              <span class="parc-label">Quantidade de Parcelas:</span>
+              <input type="number" id="input-fin-total-parc" min="1" max="120" value="10" placeholder="Ex: 10">
+            </div>
+            <div class="parc-col">
+              <span class="parc-label">Valor da Parcela:</span>
+              <input type="text" inputmode="decimal" id="input-fin-parc-amount" placeholder="Ex: 500">
+            </div>
+            <div class="parc-col">
+              <span class="parc-label">Parcelas Já Pagas:</span>
+              <input type="number" id="input-fin-paid-parc" min="0" max="119" value="0" placeholder="Ex: 5">
+            </div>
+          </div>
+          <!-- Resumo explicativo dinâmico das parcelas -->
+          <div id="fin-parc-summary-hint" class="parc-summary-hint">
+            Informe os valores para ver a distribuição mês a mês.
+          </div>
+        </div>
+
+        <!-- Mensagem de Feedback Inline -->
+        <div id="fin-form-msg" class="fin-form-feedback" style="display: none;"></div>
+
+        <button type="button" id="btn-save-financeiro" class="btn-tool-action">Salvar Lançamento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tarefas -->
+  <div id="modal-tarefas" class="tool-modal-overlay">
+    <div class="tool-modal-card">
+      <div class="tool-modal-header">
+        <h3>📋 Tarefas & Lembretes</h3>
+        <button class="btn-close-tool" data-close="modal-tarefas">✕</button>
+      </div>
+      <div class="tool-modal-body" id="tarefas-items-container"></div>
+      <div class="tool-modal-footer">
+        <input type="text" id="input-new-tarefa" placeholder="+ Nova tarefa ou lembrete...">
+        <button id="btn-save-tarefa" class="btn-tool-action">Adicionar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Recados -->
+  <div id="modal-recados" class="tool-modal-overlay">
+    <div class="tool-modal-card">
+      <div class="tool-modal-header">
+        <h3>📝 Mural de Recados</h3>
+        <button class="btn-close-tool" data-close="modal-recados">✕</button>
+      </div>
+      <div class="tool-modal-body" id="recados-items-container"></div>
+      <div class="tool-modal-footer">
+        <input type="text" id="input-new-recado" placeholder="+ Anotação rápida...">
+        <button id="btn-save-recado" class="btn-tool-action">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Customização de Wallpaper -->
+  <div id="wallpaper-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 class="modal-title">🖼️ Alterar Imagem de Fundo</h3>
+      <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:14px;">
+        Personalize o wallpaper usando uma foto da galeria ou um link da web:
+      </p>
+
+      <div class="upload-section-box">
+        <label for="wallpaper-file-input" class="btn-upload-file">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>Escolher Foto do Celular (Galeria)</span>
+        </label>
+        <input type="file" id="wallpaper-file-input" accept="image/*" style="display:none;">
+        <span id="file-chosen-status" class="file-status-label">Nenhuma foto selecionada</span>
+      </div>
+
+      <div class="divider-or"><span>OU VIA LINK</span></div>
+
+      <div style="margin-bottom: 14px;">
+        <input type="url" id="wallpaper-input-url" class="modal-input" placeholder="https://exemplo.com/imagem.jpg">
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px;">
+          <span>Escurecimento da imagem:</span>
+          <span id="dim-val-label" style="color:var(--gold); font-weight:700;">25%</span>
+        </div>
+        <input type="range" id="wallpaper-dim-slider" min="0" max="80" value="25" style="width:100%; accent-color:var(--gold); cursor:pointer;">
+      </div>
+
+      <div id="wallpaper-preview-box" class="wallpaper-mini-preview" style="display:none;">
+        <img id="wallpaper-preview-img" src="" alt="Prévia">
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-reset-wallpaper" class="btn-modal-reset" title="Restaurar imagem padrão">Restaurar Padrão</button>
+        <button id="btn-modal-cancel" class="btn-modal-cancel">Cancelar</button>
+        <button id="btn-modal-save" class="btn-modal-save">Aplicar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Banner de Instalação PWA no Celular -->
+  <div id="pwa-install-banner" class="pwa-banner">
+    <div class="pwa-banner-text">
+      <strong>Instalar HAVOC BASE</strong>
+      <span>Acesso rápido e offline no seu celular</span>
+    </div>
+    <div class="pwa-banner-btns">
+      <button id="btn-banner-install" class="pwa-banner-install-btn">Instalar</button>
+      <button id="btn-banner-dismiss" class="pwa-banner-close">✕</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/pwa.js?v=6.0"></script>
+  <script src="js/app.js?v=6.0"></script>
+  
+  <!-- OUVINTE GLOBAL INFALÍVEL DE CLIQUE NOS APLICATIVOS DA BASE -->
+  <script>
+    (function() {
+      document.addEventListener('click', function(e) {
+        // 1. Financeiro
+        var finCard = e.target.closest('#btn-open-financeiro');
+        if (finCard) {
+          e.preventDefault();
+          if (window.app && typeof window.app.renderFinanceiro === 'function') {
+            window.app.renderFinanceiro();
+          }
+          var mFin = document.getElementById('modal-financeiro');
+          if (mFin) mFin.classList.add('active');
+          return;
+        }
+
+        // 2. Tarefas & Lembretes
+        var tarCard = e.target.closest('#btn-open-tarefas');
+        if (tarCard) {
+          e.preventDefault();
+          if (window.app && typeof window.app.renderTarefas === 'function') {
+            window.app.renderTarefas();
+          }
+          var mTar = document.getElementById('modal-tarefas');
+          if (mTar) mTar.classList.add('active');
+          return;
+        }
+
+        // 3. Recados & Mural
+        var recCard = e.target.closest('#btn-open-recados');
+        if (recCard) {
+          e.preventDefault();
+          if (window.app && typeof window.app.renderRecados === 'function') {
+            window.app.renderRecados();
+          }
+          var mRec = document.getElementById('modal-recados');
+          if (mRec) mRec.classList.add('active');
+          return;
+        }
+
+        // 4. Backup & Sincronização
+        var backupBtn = e.target.closest('#btn-open-backup-modal');
+        if (backupBtn) {
+          e.preventDefault();
+          var mBack = document.getElementById('modal-backup');
+          if (mBack) mBack.classList.add('active');
+          return;
+        }
+
+        // 6. Fechar qualquer modal pelo botão '✕'
+        var closeBtn = e.target.closest('.btn-close-tool');
+        if (closeBtn) {
+          var modalId = closeBtn.getAttribute('data-close');
+          if (modalId) {
+            var modalToClose = document.getElementById(modalId);
+            if (modalToClose) modalToClose.classList.remove('active');
+          }
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
